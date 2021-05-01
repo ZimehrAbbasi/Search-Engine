@@ -37,7 +37,7 @@ test: $(TEST).sh
 
 # expects a file `test.names` to exist; it can contain any text.
 valgrind: $(PROG)
-	valgrind ./$(PROG)
+	valgrind ./$(PROG) 
 
 clean:
 	rm -rf *.dSYM  # MacOS debugger info

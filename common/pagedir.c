@@ -15,17 +15,14 @@ typedef struct webpage {
 
 bool pagedir_init(const char* pageDirectory){
 
-  char tempPath[256];
-  char *name;
-
-  int i = 0;
-  while(pageDirectory[i] != "/" || pageDirectory[i] != '\0'){
-    
+  char path[260];
+  sprintf(path, "%s/.crawler", pageDirectory);
+  FILE* fp = fopen(path, "w+");
+  if(fp == NULL){
+    return false;
   }
-
-
-
-  return !mkdir(pageDirectory, 0700);
+  fclose(fp);
+  return true;
 }
 
 void pagedir_save(const webpage_t* page, const char* pageDirectory, const int docID){

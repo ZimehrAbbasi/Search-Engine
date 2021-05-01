@@ -1,0 +1,21 @@
+chmod +x testing.sh
+./testing.sh
+./testing.sh: line 1: //: Is a directory
+Checking if URL is internal...
+Creating page directory...
+Checking if depth is in bounds...
+Success!
+ 0   Fetched: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+
+Checking if URL is internal...
+Creating page directory...
+Checking if depth is in bounds...
+Success!
+ 0   Fetched: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+ 0  Scanning: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+ 0     Found: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+ 0     Added: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+ 1    Fetched: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+
+Makefile:35: recipe for target 'test' failed
+make: *** [test] Interrupt

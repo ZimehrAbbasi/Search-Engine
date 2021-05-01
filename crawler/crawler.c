@@ -109,7 +109,7 @@ static void crawl(char* seedURL, char* pageDirectory, const int maxDepth){
 static page_t* new_page_t(char* url, int depth){
 
     if(url != NULL){
-        char* urlcpy = (char*)mem_malloc(sizeof(char)*strlen(url));
+        char* urlcpy = (char*)mem_malloc(sizeof(char)*(strlen(url)+1));
         strcpy(urlcpy, url);
         page_t* page = (page_t*)mem_malloc(sizeof(page_t));
         page->url = urlcpy;
