@@ -8,8 +8,9 @@
 ./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ../data/toscrape 0
 ./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ../data/toscrape 1
 ./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ../data/toscrape 2
-./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ../data/toscrape 10
+./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ../data/toscrape 3
 
 // WIKIPEDIA AT DEPTH 0, 1
 ./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia ../data/wikipedia 0
 ./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia ../data/wikipedia 1
+./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia ../data/wikipedia 2

@@ -62,19 +62,21 @@ static void pageScan(webpage_t* page, bag_t* pagesToCrawl, hashtable_t* pagesSee
     int pos = 0;
     char* url;
     while ((url = webpage_getNextURL(page, &pos)) != NULL) {
-        logr("Found", webpage_getDepth(page), url);
-        if(isInternalURL(url)){
-            if(hashtable_insert(pagesSeen, url, url)){
-                page_t* p = new_page_t(url, webpage_getDepth(page)+1);
+        char* normurl = normalizeURL(url);
+        logr("Found", webpage_getDepth(page), normurl);
+        if(isInternalURL(normurl)){
+            if(hashtable_insert(pagesSeen, normurl, normurl)){
+                page_t* p = new_page_t(normurl, webpage_getDepth(page)+1);
                 bag_insert(pagesToCrawl, p);
-                logr("Added", webpage_getDepth(page), url);
+                logr("Added", webpage_getDepth(page), normurl);
             }else{
-                logr("IgnDupl", webpage_getDepth(page), url);
+                logr("IgnDupl", webpage_getDepth(page), normurl);
             }
         }else{
-            logr("IgnExtrn", webpage_getDepth(page), url);
+            logr("IgnExtrn", webpage_getDepth(page), normurl);
         }
         mem_free(url);
+        mem_free(normurl);
     }
 }
 
@@ -135,7 +137,12 @@ int main(const int argc, char* argv[]){
     char** seedURL = (char **)malloc(sizeof(char*));
     char** pageDirectory = (char **)malloc(sizeof(char*));
     int* maxDepth = (int *)malloc(sizeof(int));
+    printf("\n####################################################################\n\n");
+    printf("Precrawl checks:\n");
     parseArgs(argc, argv, seedURL, pageDirectory, maxDepth);
+    printf("\n--------------------------------------------------------------------\n");
+    printf("\nSeed URL: %3s\nPageDir: %3s\nMax Depth: %d\n", *seedURL, *pageDirectory, *maxDepth);
+    printf("\n####################################################################\n\n");
     crawl(*seedURL, *pageDirectory, *maxDepth);
     printf("\n");
     mem_free(seedURL);

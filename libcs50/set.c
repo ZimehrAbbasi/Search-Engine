@@ -56,7 +56,7 @@ bool set_insert(set_t *set, const char *key, void *item)
     if (set != NULL && key != NULL && item != NULL)
     {
 
-        char *keycpy = (char *)mem_malloc(strlen(key) * sizeof(char));
+        char *keycpy = (char *)mem_malloc((strlen(key)+1) * sizeof(char));
         strcpy(keycpy, key);
 
         setnode_t *temp;
