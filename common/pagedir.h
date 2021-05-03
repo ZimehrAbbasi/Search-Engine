@@ -9,7 +9,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+// INITIATING A PAGE DIRECTORY TO SAVE THE HTML CODE FOR THE FOUND URLS
 bool pagedir_init(const char* pageDirectory);
+
+// SAVIING THE HTML TO THE INITIATED PAGE DIRECTORY
 void pagedir_save(const webpage_t* page, const char* pageDirectory, const int docID);
 
 #endif // __PAGEDIR_H
