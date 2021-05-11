@@ -3,9 +3,9 @@
 # David Kotz, April 2016, 2017, 2019, 2021
 # updated by Xia Zhou, July 2016, 2018, January 2019
 
-PROG = crawler
+PROG = indexer
 TEST = testing
-OBJS = crawler.o
+OBJS = indexer.o
 LIBS = ../libcs50/libcs50.a ../common/common.a
 
 # uncomment the following to turn on verbose memory logging
@@ -18,14 +18,13 @@ MAKE = make
 $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-crawler.o: crawler.c
+indexer.o: indexer.c
 
 .PHONY: test valgrind clean
 
 # expects a file `test.names` to exist; it can contain any text.
 test: $(TEST).sh
-	chmod +x $(TEST).sh
-	./$(TEST).sh
+	bash -v $(TEST).sh
 
 # expects a file `test.names` to exist; it can contain any text.
 valgrind: $(PROG)
