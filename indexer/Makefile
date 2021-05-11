@@ -3,9 +3,11 @@
 # David Kotz, April 2016, 2017, 2019, 2021
 # updated by Xia Zhou, July 2016, 2018, January 2019
 
-PROG = indexer
+PROG1 = indexer
+PROG2 = indextest
 TEST = testing
-OBJS = indexer.o
+OBJS1 = indexer.o
+OBJS2 = indextest.o
 LIBS = ../libcs50/libcs50.a ../common/common.a
 
 # uncomment the following to turn on verbose memory logging
@@ -15,10 +17,15 @@ CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I../lib
 CC = gcc
 MAKE = make
 
-$(PROG): $(OBJS)
+$(PROG1): $(OBJS1)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 indexer.o: indexer.c
+
+$(PROG2): $(OBJS2)
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+
+indextest.o: indextest.c
 
 .PHONY: test valgrind clean
 
