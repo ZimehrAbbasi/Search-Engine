@@ -67,6 +67,17 @@ void index_save(index_t* index, FILE* fp){
     }
 }
 
+void index_load(index_t* index, FILE* fp, void (*itemfunc)(index_t* index, char* line)){
+    char* line;
+    while((line = file_readLine(fp)) != NULL){
+        if(itemfunc != NULL){
+            itemfunc(index, line);
+        }
+        mem_free(line);
+    }
+    mem_free(line);
+}
+
 static void index_iterate_helper(void* arg, const char* key, void* item){
     fputs(key, arg);
     fputs(" ", arg);

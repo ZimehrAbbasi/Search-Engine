@@ -57,18 +57,6 @@ void parse(index_t* index, char* line){
 
 }
 
-void index_load(index_t* index, FILE* fp){
-
-    char* line;
-    
-    while((line = file_readLine(fp)) != NULL){
-        parse(index, line);
-        mem_free(line);
-    }
-
-    mem_free(line);
-
-}
 
 int main(const int argc, const char* argv[]){
     if(argc == 3){
@@ -77,7 +65,7 @@ int main(const int argc, const char* argv[]){
         const char* new = argv[2];
         FILE* fp = fopen(old, "r");
         if(fp != NULL){
-            index_load(index, fp);
+            index_load(index, fp, parse);
             fclose(fp);
             FILE* fp1 = fopen(new, "w");
             if(fp1 != NULL){

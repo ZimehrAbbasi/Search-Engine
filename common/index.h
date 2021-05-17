@@ -22,4 +22,6 @@ void index_delete(index_t* index);
 
 void index_save(index_t* index, FILE* fp);
 
+void index_load(index_t* index, FILE* fp, void (*itemfunc)(index_t* index, char* line));
+
 #endif
