@@ -48,6 +48,18 @@ bool index_insert(index_t* index, const char* key, int DocID){
     return false;
 }
 
+int index_get(index_t* index, const char* key, int DocID){
+
+    if(index != NULL && key != NULL){
+
+        if(hashtable_find(index->ht, key) != NULL){
+            counters_t* c = hashtable_find(index->ht, key);
+            return counters_get(c, DocID);
+        }
+    }
+    return 0;
+}
+
 void index_print(index_t* index, FILE *fp){
     if(index != NULL && fp != NULL){
         hashtable_print(index->ht, fp, index_print_helper);

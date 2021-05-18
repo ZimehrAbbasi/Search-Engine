@@ -84,6 +84,23 @@ void* hashtable_find(hashtable_t* ht, const char* key){
     return NULL;
 }
 
+// Finding the set associated with a particular key
+void* hashtable_insertat(hashtable_t* ht, const char* key, void* item, int num){
+    if(ht != NULL){
+        set_t** sets;
+        sets = ht->set;
+
+        unsigned long index = num;
+        bool success = set_insert(sets[index], key, item);
+        if(success){
+            ht->num_items += 1;
+            return true;
+        }
+    }
+
+    return NULL;
+}
+
 // Printing the hashtable
 void hashtable_print(hashtable_t* ht, FILE* fp, void (*itemprint)(FILE* fp, const char* key, void* item)){
     if(fp != NULL){

@@ -58,6 +58,13 @@ int counters_add(counters_t *ctrs, const int key)
         int val = counters_get(ctrs, key);
         if (val != 0)
         {
+            for (counternode_t *node = ctrs->head; node != NULL; node = node->next)
+            {
+                if(node->key == key){
+                    node->count += 1;
+                    val = node->count;
+                }
+            }
             return val;
         }
 
@@ -86,7 +93,6 @@ int counters_get(counters_t *ctrs, const int key)
         {
             if (temp->key == key)
             {
-                temp->count += 1;
                 return temp->count;
             }
             temp = temp->next;

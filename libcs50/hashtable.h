@@ -16,6 +16,7 @@
 
 /**************** global types ****************/
 typedef struct hashtable hashtable_t;  // opaque to users of the module
+typedef struct set set_t;
 
 /**************** functions ****************/
 
@@ -113,5 +114,7 @@ void hashtable_iterate(hashtable_t* ht, void* arg,
  *   this module allocated that memory in hashtable_insert.
  */
 void hashtable_delete(hashtable_t* ht, void (*itemdelete)(void* item) );
+
+void* hashtable_insertat(hashtable_t* ht, const char* key, void* item, int num);
 
 #endif // __HASHTABLE_H

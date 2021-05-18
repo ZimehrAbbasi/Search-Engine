@@ -16,6 +16,8 @@ index_t* index_new(const int num_slots);
 
 bool index_insert(index_t* index, const char* key, int DocID);
 
+int index_get(index_t* index, const char* key, int DocID);
+
 void index_print(index_t* index, FILE *fp);
 
 void index_delete(index_t* index);
