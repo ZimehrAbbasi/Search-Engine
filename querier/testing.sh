@@ -40,3 +40,6 @@ echo "reviews and meaning or baker" | ./querier ../data/toscrape ../data/toscrap
 echo " "
 echo "doctrine" | ./querier ../data/toscrape ../data/toscrape.index
 echo " "
+
+# Valgrind
+echo "first and depth or page" | valgrind --leak-check=full -v ./querier ../data/letters ../data/letters.index

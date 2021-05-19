@@ -126,10 +126,9 @@ void _querier(index_t* index, const char* pageDir, int i){
         }
         strcat(line, buffer);
     }
-    char *query = mem_malloc(strlen(line));
-    query = normalize_word(line);
+    char* query = normalize_word(line);
     mem_free(line);
-    char *tokens[15];
+    char *tokens[50];
     int words = tokenize(tokens, query);
     
     // Print the normalized query
@@ -170,6 +169,7 @@ void _querier(index_t* index, const char* pageDir, int i){
             }
         }
     }
+    mem_free(query);
     
     // Check for invalid entries
     //Check if the first or last element of the array are negative, i.e. 'and' 'or'
