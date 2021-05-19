@@ -170,7 +170,7 @@ void _querier(index_t* index, const char* pageDir, int i){
         }
     }
     mem_free(query);
-    
+
     // Check for invalid entries
     //Check if the first or last element of the array are negative, i.e. 'and' 'or'
     if(docArray[0][0] < 0 || docArray[0][words-1] < 0){
@@ -185,6 +185,32 @@ void _querier(index_t* index, const char* pageDir, int i){
             exit(1);
         }
     }
+
+    // For no precedence
+    // for(int x = 0; x < i; x++){
+    //     int cur = 0;
+    //     for(int y = 0; y< words;y++){
+    //         if(docArray[x][y] == 0){
+    //             if(cur > docArray[x][y]){
+    //                 cur = docArray[x][y]
+    //             }
+    //         }
+    //         if(docArray[x][y] == -1){
+    //             if(y != words-1){
+    //                 if(docArray[x][y+1] < cur){
+    //                     cur = docArray[x][y+1]
+    //                 }
+    //             }
+    //         }
+    //         if(docArray[x][y] == -2){
+    //             if(y != words-1){
+                    
+    //                 cur += docArray[x][y+1]
+                    
+    //             }
+    //         }
+    //     }
+    // }
 
     // Check the number of 'or's in the query
     int orCount = 0;
