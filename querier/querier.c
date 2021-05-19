@@ -19,46 +19,29 @@ typedef struct index{
 } index_t;
 
 void parse(index_t* index, char* line);
+int pageDir_files(const char* pageDir);
 void load_index(index_t* index, FILE* fp);
-void _querier(index_t* index, const char* pageDir);
-// static void item_print(FILE* fp, const char* key, void* item);
+int tokenize(char* tokens[] , char* query);
+void _querier(index_t* index, const char* pageDir, int i);
 
-void load_index(index_t* index, FILE* fp){
-    char* line;
-    while((line = file_readLine(fp)) != NULL){
-        parse(index, line);
-        mem_free(line);
+int pageDir_files(const char* pageDir){
+    int i = 0;
+    while(true){
+        char* path = pagedir_add(pageDir, i);
+        FILE *fp = fopen(path, "r");
+        if(fp == NULL){
+            mem_free(path);
+            break;
+        }
+        mem_free(path);
+        i += 1;
+        fclose(fp);
     }
-    mem_free(line);
+    return i;
 }
 
-// char** ccc(char* query, int *len){
-//     char *tokens[] = mem_malloc(strlen(query));
-//     int i = 0;
-//     char *word = strtok(query, " ");
-//     while( word != NULL && strcmp(word, "(null)") != 0) {
-//         tokens[i] = mem_malloc(strlen(word));
-//         strcpy(tokens[i], word);
-//         word = strtok(NULL, " ");
-//         i++;
-//     }
-//     *len = i;
-//     return tokens;
-// }
-
-void _querier(index_t* index, const char* pageDir){
-    
-    char *query = calloc(1,1), buffer[BUFFERSIZE];
-    while(fgets(buffer, BUFFERSIZE, stdin))
-    {
-        query = realloc(query, strlen(query)+1+strlen(buffer));
-        if( !query ){
-            exit(1);
-        }
-        strcat( query, buffer );
-    }
+int tokenize(char* tokens[] , char* query){
     int querylength = strlen(query);
-    char *tokens[15];
     bool space = true;
     int words = 0;
     for(int i = 0; i< querylength;i++){
@@ -80,150 +63,7 @@ void _querier(index_t* index, const char* pageDir){
         }
     }
     words += 1;
-    
-    int weights[words];
-    printf("Query: ");
-    for(int j = 0; j < words; j++){
-        weights[j] = 0;
-        printf("%s ", tokens[j]);
-    }
-    printf("\n");
-    for(int j = 0; j < words; j++){
-        if(strcmp(tokens[j], "and")==0){
-            weights[j] = 1;
-        }
-        if(strcmp(tokens[j], "or")==0){
-            weights[j] = 2;
-        }
-    }
-    int zeros = 0;
-    for(int j = 0; j < words; j++){
-        if(weights[j] == 0){
-            zeros += 1;
-        }
-    }
-
-    int i = 0;
-    while(true){
-        char* path = pagedir_add(pageDir, i);
-        FILE *fp = fopen(path, "r");
-        if(fp == NULL){
-            mem_free(path);
-            break;
-        }
-        mem_free(path);
-        i += 1;
-        fclose(fp);
-    }
-
-    int docArray[i][words];
-
-    for(int j = 0; j < i; j++){
-        char in[10];
-        sprintf(in, "%d", i);
-        for(int k = 0; k < words; k++){
-            if(weights[k] == 0){
-                int num = index_get(index, tokens[k], j);
-                docArray[j][k] = num;
-            }else{
-                if(weights[k] == 1){
-                    docArray[j][k] = -1;
-                }
-                if(weights[k] == 2){
-                    docArray[j][k] = -2;
-                }
-            }
-        }
-    }
-    mem_free(query);
-
-    // TO ADD THE EDGE CASES
-
-    if(docArray[0][0] < 0 || docArray[0][words-1] < 0){
-        fprintf(stderr, "Invalid query...\n");
-        exit(1);
-    }
-
-    for(int x = 0; x < words-1; x++){
-        if(docArray[0][x] < 0 && docArray[0][x+1] < 0){
-            fprintf(stderr, "Invalid query...\n");
-            exit(1);
-        }
-    }
-
-    int orCount = 0;
-    for(int y = 0; y< words;y++){
-        if(docArray[0][y] == -2){
-            orCount += 1;
-        }
-    }
-    
-    int orArray[i][orCount+1];
-
-    for(int x = 0; x < i; x++){
-        int min = INT_MAX;
-        int ticker = 0;
-        for(int y = 0; y< words;y++){
-            if(docArray[x][y] == -2){
-                orArray[x][ticker] = min;
-                ticker += 1;
-                min = INT_MAX;
-                continue;
-            }
-            if(docArray[x][y] == -1){
-                continue;
-            }
-            if(docArray[x][y] < min){
-                min = docArray[x][y];
-                orArray[x][ticker] = min;
-            }
-        }
-        orArray[x][ticker] = min;
-    }
-    
-    int scoreArray[i];
-    int sortedIndex[i];
-
-    for(int x = 0; x < i; x++){
-        int sum = 0;
-        for(int y = 0; y< orCount+1;y++){
-            sum += orArray[x][y];
-        }
-        scoreArray[x] = sum;
-        sortedIndex[x] = x;
-    }
-    for(int x = 0; x < i; x++){
-        for(int y = 0; y< i;y++){
-            if(scoreArray[y] < scoreArray[x]){
-                int temp1 = scoreArray[x];
-                scoreArray[x] = scoreArray[y];
-                scoreArray[y] = temp1;
-
-                int temp2 = sortedIndex[x];
-                sortedIndex[x] = sortedIndex[y];
-                sortedIndex[y] = temp2;
-            }
-        }
-    }
-
-    printf("Search Results: \n\n");
-
-    for(int x = 0; x < i; x++){
-        if(scoreArray[x] == 0){
-            continue;
-        }
-        char *path = pagedir_add(pageDir, x);
-        FILE *fp = fopen(path, "r");
-        if(fp == NULL){
-            mem_free(path);
-            break;
-        }
-        char *line = file_readLine(fp);
-        printf("Score: %4d Document: %4d URL: %4s\n", scoreArray[x], sortedIndex[x], line);
-        mem_free(line);
-        mem_free(path);
-    }
-    printf("\n");
+    return words;
 }
 
 void parse(index_t* index, char* query){
@@ -265,14 +105,165 @@ void parse(index_t* index, char* query){
     words += 1;
 }
 
-// static void item_print(FILE* fp, const char* key, void* item){
-//     int i = *(int *)item;
-//     char str[10];
-//     sprintf(str, "%d", i);
-//     fputs(key, fp);
-//     fputs(" ", fp);
-//     fputs(str, fp);
-// }
+void load_index(index_t* index, FILE* fp){
+    char* line;
+    while((line = file_readLine(fp)) != NULL){
+        parse(index, line);
+        mem_free(line);
+    }
+    mem_free(line);
+}
+
+void _querier(index_t* index, const char* pageDir, int i){
+    
+    char *line = calloc(1,1), buffer[BUFFERSIZE];
+    while(fgets(buffer, BUFFERSIZE, stdin))
+    {
+        line = realloc(line, strlen(line)+1+strlen(buffer));
+        if(!line){
+            printf("----------------------------------------------------------------------------------");
+            exit(1);
+        }
+        strcat(line, buffer);
+    }
+    char *query = mem_malloc(strlen(line));
+    query = normalize_word(line);
+    mem_free(line);
+    char *tokens[15];
+    int words = tokenize(tokens, query);
+    
+    // Print the normalized query
+    int weights[words];
+    printf("Query: ");
+    for(int j = 0; j < words; j++){
+        weights[j] = 0;
+        printf("%s ", tokens[j]);
+    }
+    printf("\n");
+
+    // Assign 1 to 'and', 2 to 'or'
+    for(int j = 0; j < words; j++){
+        if(strcmp(tokens[j], "and")==0){
+            weights[j] = 1;
+        }
+        if(strcmp(tokens[j], "or")==0){
+            weights[j] = 2;
+        }
+    }
+
+    // Create the document array that stores the scores as a 2D array
+    int docArray[i][words];
+    for(int j = 0; j < i; j++){
+        char in[10];
+        sprintf(in, "%d", i);
+        for(int k = 0; k < words; k++){
+            if(weights[k] == 0){
+                int num = index_get(index, tokens[k], j);
+                docArray[j][k] = num;
+            }else{
+                if(weights[k] == 1){
+                    docArray[j][k] = -1;
+                }
+                if(weights[k] == 2){
+                    docArray[j][k] = -2;
+                }
+            }
+        }
+    }
+    
+    // Check for invalid entries
+    //Check if the first or last element of the array are negative, i.e. 'and' 'or'
+    if(docArray[0][0] < 0 || docArray[0][words-1] < 0){
+        fprintf(stderr, "Invalid query...\n");
+        exit(1);
+    }
+
+    // Check if consecutive words are (and, and), (and, or), (or, or), or (or, and)
+    for(int x = 0; x < words-1; x++){
+        if(docArray[0][x] < 0 && docArray[0][x+1] < 0){
+            fprintf(stderr, "Invalid query...\n");
+            exit(1);
+        }
+    }
+
+    // Check the number of 'or's in the query
+    int orCount = 0;
+    for(int y = 0; y< words;y++){
+        if(docArray[0][y] == -2){
+            orCount += 1;
+        }
+    }
+    
+    int orArray[i][orCount+1];
+
+    for(int x = 0; x < i; x++){
+        int min = INT_MAX;
+        int ticker = 0;
+        for(int y = 0; y< words;y++){
+            if(docArray[x][y] == -2){
+                orArray[x][ticker] = min;
+                ticker += 1;
+                min = INT_MAX;
+                continue;
+            }
+            if(docArray[x][y] == -1){
+                continue;
+            }
+            if(docArray[x][y] < min){
+                min = docArray[x][y];
+                orArray[x][ticker] = min;
+            }
+        }
+        orArray[x][ticker] = min;
+    }
+    
+    int scoreArray[i];
+    int sortedIndex[i];
+
+    // Create max score array for each document
+    for(int x = 0; x < i; x++){
+        int sum = 0;
+        for(int y = 0; y< orCount+1;y++){
+            sum += orArray[x][y];
+        }
+        scoreArray[x] = sum;
+        sortedIndex[x] = x;
+    }
+
+    // Sort by score, sort the index array in the same way
+    for(int x = 0; x < i; x++){
+        for(int y = 0; y< i;y++){
+            if(scoreArray[y] < scoreArray[x]){
+                int temp1 = scoreArray[x];
+                scoreArray[x] = scoreArray[y];
+                scoreArray[y] = temp1;
+
+                int temp2 = sortedIndex[x];
+                sortedIndex[x] = sortedIndex[y];
+                sortedIndex[y] = temp2;
+            }
+        }
+    }
+
+    printf("\nSearch Results: \n");
+    for(int x = 0; x < i; x++){
+        if(scoreArray[x] == 0){
+            continue;
+        }
+        char *path = pagedir_add(pageDir, x);
+        FILE *fp = fopen(path, "r");
+        if(fp == NULL){
+            mem_free(path);
+            break;
+        }
+        char *line = file_readLine(fp);
+        printf("Score: %4d Document: %4d URL: %4s\n", scoreArray[x], sortedIndex[x], line);
+        mem_free(line);
+        mem_free(path);
+        fclose(fp);
+    }
+    printf("----------------------------------------------------------------------------------\n");
+}
 
 int main(const int argc, const char* argv[]){
     
@@ -299,11 +290,13 @@ int main(const int argc, const char* argv[]){
                 index_t* index = index_new(300);
                 printf("Loading in index...\n");
                 load_index(index, fp);
+                printf("----------------------------------------------------------------------------------");
+                int num_files = pageDir_files(pagedir);
                 while(true){
-                    printf("Query? ");
+                    printf("\nQuery? ");
                     break;
                 }
-                _querier(index, pagedir);
+                _querier(index, pagedir, num_files);
                 index_delete(index);
                 fclose(fp);
             }else{
@@ -316,4 +309,5 @@ int main(const int argc, const char* argv[]){
     }else{
         fprintf(stderr, "Invalid arguments...\n");
     }
+    
 }
