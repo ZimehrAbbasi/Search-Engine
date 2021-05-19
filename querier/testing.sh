@@ -24,7 +24,6 @@ echo "planet earth or and science" | ./querier ../data/letters ../data/letters.i
 echo " "
 
 # Normal cases
-
 echo "first" | ./querier ../data/letters ../data/letters.index
 echo " "
 echo "first and depth or page" | ./querier ../data/letters ../data/letters.index
@@ -42,4 +41,5 @@ echo "doctrine" | ./querier ../data/toscrape ../data/toscrape.index
 echo " "
 
 # Valgrind
-echo "first and depth or page" | valgrind --leak-check=full -v ./querier ../data/letters ../data/letters.index
+echo "first and depth or page" | valgrind ./querier ../data/letters ../data/letters.index
+echo "doctrine" | valgrind  ./querier ../data/toscrape ../data/toscrape.index
